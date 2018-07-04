@@ -1,3 +1,9 @@
+fork of Django-celery-email to also include a logging system.
+
+Tested working with Django 2.0.5 - 2.0.7
+
+Hope someone can put this to good use.
+
 ==========================================================
 django-celery-email - A Celery-backed Django Email Backend
 ==========================================================
