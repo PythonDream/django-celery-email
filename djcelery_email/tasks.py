@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.core.mail import EmailMessage, get_connection
 from django.utils.six import string_types
+from .models import Email
 
 from celery import shared_task
 
 # Make sure our AppConf is loaded properly.
-import djcelery_email.conf  # noqa
-from djcelery_email.utils import dict_to_email, email_to_dict
+from .conf import DjangoCeleryEmailAppConf # noqa
+from .utils import dict_to_email, email_to_dict
 
 # Messages *must* be dicts, not instances of the EmailMessage class
 # This is because we expect Celery to use JSON encoding, and we want to prevent
@@ -47,8 +48,19 @@ def send_emails(messages, backend_kwargs=None, **kwargs):
     for message in messages:
         try:
             sent = conn.send_messages([dict_to_email(message)])
+            recipients = '; '.join(message['to'])
+            email = Email.objects.create(
+                from_email=message['from_email'],
+                recipients=recipients,
+                subject=message['subject'],
+                body=message['body'],
+            )
+
             if sent is not None:
                 messages_sent += sent
+
+                email.ok = True
+                email.save()
             logger.debug("Successfully sent email message to %r.", message['to'])
         except Exception as e:
             # Not expecting any specific kind of exception here because it
@@ -58,6 +70,7 @@ def send_emails(messages, backend_kwargs=None, **kwargs):
             send_emails.retry([[message], combined_kwargs], exc=e, throw=False)
 
     conn.close()
+
     return messages_sent
 
 

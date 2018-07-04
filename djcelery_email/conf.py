@@ -1,3 +1,4 @@
+from django.conf import settings as defined_settings
 from appconf import AppConf
 
 

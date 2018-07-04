@@ -9,7 +9,6 @@ from django.core.mail import EmailMultiAlternatives, EmailMessage
 def chunked(iterator, chunksize):
     """
     Yields items from 'iterator' in chunks of size 'chunksize'.
-
     >>> list(chunked([1, 2, 3, 4, 5], chunksize=2))
     [(1, 2), (3, 4), (5,)]
     """

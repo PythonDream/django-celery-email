@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 
-from djcelery_email.tasks import send_emails
-from djcelery_email.utils import chunked, email_to_dict
+from .tasks import send_emails
+from .utils import chunked, email_to_dict
 
 
 class CeleryEmailBackend(BaseEmailBackend):
